@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 import boto3
 from botocore.exceptions import ClientError
 import logging
+from PIL import Image
+import io
 
 app = Flask(__name__)
 
@@ -22,12 +24,23 @@ def process_image():
     # Now convert the AWS response into something resembling what DeepStack will return
     print(resp)
 
+    img = Image.open(io.BytesIO(image['Bytes']))
+
     dsresp = {'predictions': [], 'success': True}
     for l in resp['Labels']:
-        ds = {'x_min': 0, 'x_max': 0, 'y_min': 0,
-              'y_max': 0, 'confidence': l['Confidence'] / 100,
-              'label': l['Name']}
-        dsresp['predictions'].append(ds)
+        for i in l['Instances']:
+            bb = i['BoundingBox']
+            top = bb['Top'] * img.height
+            bottom = bb['Height'] * img.height + top
+            left = bb['Left'] * img.width
+            right = bb['Width'] * img.width + left
+            ds = {'x_min': int(left), 
+                'x_max': int(right), 
+                'y_min': int(top),
+                'y_max': int(bottom), 
+                'confidence': i['Confidence'] / 100,
+                'label': l['Name']}
+            dsresp['predictions'].append(ds)
 
     print(dsresp)
     return jsonify(dsresp)
