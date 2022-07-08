@@ -7,21 +7,35 @@ For my use of AWS Rekognition, the approximate AWS costs are $3CAD/month, wherea
 
 I've also found that AWS Rekognition is more accurate than DeepStack in many cases.
 
+Another goal of this is to replace a Node-RED flow that does roughly the same thing with something that's more native to Blue Iris.  The Node-RED flow does three major things:
+
+* Recieves Blue Iris alerts via MQTT and runs them through AWS Rekognition
+* Determines whether or not to send the alert, then sends it via Home Assistant
+* Logs the image and response from Rekognition to a PostgreSQL database
+
+This shim can replace most of this, apart from the PostgreSQL logging, with only some small code to create the notification remaining in Node-RED.
+
 # Quick Start
 ```
+# Create venv, install required packages
 python3 -m venv venv
 . venv/bin/activate
 pip install -r requirements.txt
 
 # AWS access details and region
-# NOTE:  You can use any method supported by boto3
+# NOTE:  You can use any method supported by boto3 to pass these parameters
 export AWS_ACCESS_KEY_ID=...
 export AWS_SECRET_ACCESS_KEY=...
 export AWS_DEFAULT_REGION=...
 
+# Run it
 python DSShim.py
+
+# Or run it via the flask command...
+export FLASK_APP=DSShim
+python -m flask run --no-debugger --host 0.0.0.0 --port 5000 
 ```
-NOTE:  This is not the recommended way to run a Flask application in Production.  See the [Flask documentation](https://flask.palletsprojects.com/en/2.1.x/deploying/) for more appropriate options.
+NOTE:  Neither option to run this is recommended to run a Flask application in Production.  See the [Flask documentation](https://flask.palletsprojects.com/en/2.1.x/deploying/) for more appropriate options.
 
 Configure Blue Iris as shown below.
 

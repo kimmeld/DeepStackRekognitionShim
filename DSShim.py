@@ -7,8 +7,9 @@ import io
 
 app = Flask(__name__)
 
-logging.basicConfig(level=logging.INFO,
-                    format='%(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO, 
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 rekognition_client = boto3.client('rekognition')
 
 
@@ -19,11 +20,16 @@ def process_image():
     image = {"Bytes": f.stream.read()}
 
     # Call Rekognition
+    logger.info("Calling Rekognition")
     resp = rekognition_client.detect_labels(Image=image)
+    logger.info("Done")
 
     # Now convert the AWS response into something resembling what DeepStack will return
-    img = Image.open(io.BytesIO(image['Bytes']))
 
+    # Open the image so that we can determine its width and height
+    # Rekognition returns label locations in a range of 0-1, but DeepStack returns them in pixels
+    img = Image.open(io.BytesIO(image['Bytes']))
+    
     dsresp = {'predictions': [], 'success': True}
     for l in resp['Labels']:
         for i in l['Instances']:
