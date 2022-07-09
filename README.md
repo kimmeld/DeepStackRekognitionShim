@@ -13,7 +13,7 @@ Another goal of this is to replace a Node-RED flow that does roughly the same th
 * Determines whether or not to send the alert, then sends it via Home Assistant
 * Logs the image and response from Rekognition to a PostgreSQL database
 
-This shim can replace most of this, apart from the PostgreSQL logging, with only some small code to create the notification remaining in Node-RED.
+This shim can replace most of this, apart from the PostgreSQL logging, with only some small code to create the notification remaining in Node-RED.  PostgreSQL logging will not be implemented in this shim because Blue Iris does sufficient logging internally to determine why the AI flagged an image the way it did.  The Python logging module deals with logging that's appropriate to the shim.
 
 # Quick Start
 ```
@@ -37,7 +37,19 @@ python -m flask run --no-debugger --host 0.0.0.0 --port 5000
 ```
 NOTE:  Neither option to run this is recommended to run a Flask application in Production.  See the [Flask documentation](https://flask.palletsprojects.com/en/2.1.x/deploying/) for more appropriate options.
 
-Configure Blue Iris as shown below.
+A simple option to run it in Production is to use [waitress](https://docs.pylonsproject.org/projects/waitress/en/latest/):
+```
+# Install
+pip install waitress
+
+# Set AWS credentials
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+export AWS_DEFAULT_REGION=...
+
+# Run it
+waitress-serve --listen 0.0.0.0:5000 DSShim:app
+```
 
 # Blue Iris Configuration
 ![Blue Iris Configuration](images/blueiris_config.png)
@@ -50,7 +62,11 @@ This is largely the same as described in the manual, however the names of the la
 Camera Settings, Trigger tab, Artificial Intelligence button:
 ![Blue Iris Camera Configuration](images/blueiris_camera_config.png)
 
-Important notes:
+# Important Configuration Notes
+
+Since AWS Rekognition is pay-per-usage, there are some options to be aware of which will greatly impact your AWS bill.
 
 * "Detect/ignore static objects" seems to cause periodic calls to the shim to look for static objects.  This will increase your AWS bill.
 * "+ real-time images" will cause each motion detection to make multiple calls to the shim.  This will increase your AWS bill, but may be useful in some circumstances.
+
+I recommend monitoring the output of the shim after making any changes to see how often Blue Iris is calling it.  I also recommend setting up a budget alert in AWS so that things don't get out of hand.
