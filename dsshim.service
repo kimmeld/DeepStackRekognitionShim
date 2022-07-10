@@ -1,0 +1,19 @@
+# Sample SystemD unit file for DeepStack Shim
+# Modify ExecStart, WorkingDirectory, and the AWS environment variables to suit your requirements
+[Unit]
+Description=DeepStack Rekognition Shim
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/home/hautils/DeepStackRekognitionShim/venv/bin/waitress-serve --listen 0.0.0.0:5001 DSShim:app
+WorkingDirectory=/home/hautils/DeepStackRekognitionShim
+User=hautils
+Group=hautils
+Environment=AWS_ACCESS_KEY_ID=...
+Environment=AWS_SECRET_ACCESS_KEY=...
+Environment=AWS_DEFAULT_REGION=...
+
+[Install]
+WantedBy=multi-user.target
