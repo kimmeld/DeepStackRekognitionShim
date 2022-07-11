@@ -1,5 +1,5 @@
 # Introduction
-This tool is a shim which allows [AWS Rekognition](https://aws.amazon.com/rekognition/) to be used with [Blue Iris](https://blueirissoftware.com/).  It works by exposing enough of the DeepStack API so that Blue Iris will work, the requests are then proxied to Rekognition and the response transformed to look like what DeepStack would respond with.
+This tool is a shim which allows [AWS Rekognition](https://aws.amazon.com/rekognition/) to be used with [Blue Iris](https://blueirissoftware.com/).  It works by exposing enough of the DeepStack API so that Blue Iris' DeepStack will work, the requests are then proxied to Rekognition and the response transformed to look like what DeepStack would respond with.
 
 # Why?
 
@@ -66,7 +66,12 @@ Camera Settings, Trigger tab, Artificial Intelligence button:
 
 Since AWS Rekognition is pay-per-usage, there are some options to be aware of which will greatly impact your AWS bill.
 
-* "Detect/ignore static objects" seems to cause periodic calls to the shim to look for static objects.  This will increase your AWS bill.
-* "+ real-time images" will cause each motion detection to make multiple calls to the shim.  This will increase your AWS bill, but may be useful in some circumstances.
+The following options cause Blue Iris to make extra calls to the shim, each call will increase your AWS bill:
+
+* "Detect/ignore static objects" seems to cause periodic calls to the shim to look for static objects.
+* "+ real-time images" will cause each motion detection to make multiple calls to the shim based on the settings.
+* "Begin analysis with motion-leading image" causes Blue Iris to make an extra call to the shim each time motion is detected.  
+
+Each of these will impact how well the AI can detect things, so it's important to monitor its performance and adjust the settings to suit your needs.
 
 I recommend monitoring the output of the shim after making any changes to see how often Blue Iris is calling it.  I also recommend setting up a budget alert in AWS so that things don't get out of hand.
