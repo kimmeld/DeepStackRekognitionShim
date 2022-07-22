@@ -60,7 +60,7 @@ def process_image():
                     'x_max': int(right), 
                     'y_min': int(top),
                     'y_max': int(bottom), 
-                    'confidence': i['Confidence'] / 100,
+                    'confidence': int(i['Confidence']) / 100,
                     'label': l['Name']}
                 dsresp['predictions'].append(ds)
     except ClientError as e:        
