@@ -15,4 +15,4 @@ ENV PATH="/home/worker/.local/bin:${PATH}"
 
 EXPOSE 5001
 
-ENTRYPOINT [ "gunicorn", "proxy:app" ]
+ENTRYPOINT [ "gunicorn", "DSShim:app" ]
