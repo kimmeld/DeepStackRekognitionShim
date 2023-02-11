@@ -1,10 +1,7 @@
 FROM python:3.10
 
 RUN pip3 install --no-cache-dir --upgrade pip &&\
-    apt install -y adduser &&\
-    adduser -m worker &&\
-    apt -y remove adduser &&\
-    rm -rf /var/lib/apt/lists/*
+    adduser --system worker
 
 USER worker
 WORKDIR /home/worker
