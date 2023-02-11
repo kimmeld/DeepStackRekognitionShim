@@ -4,6 +4,7 @@ from botocore.exceptions import ClientError
 import logging
 from PIL import Image
 import io
+import os
 
 app = Flask(__name__)
 
@@ -13,9 +14,9 @@ logger = logging.getLogger(__name__)
 rekognition_client = boto3.client('rekognition')
 
 # Rekognition options
-# TODO:  Refactor these configuration options into environment variables
-RESIZE_IMAGE = False
-MINIMUM_CONFIDENCE = 75
+RESIZE_IMAGE = (os.getenv("RESIZE_IMAGE") == "YES")
+RESIZE_IMAGE_SIZE = int(os.getenv("RESIZE_IMAGE_SIZE", "768"))
+MINIMUM_CONFIDENCE = int(os.getenv("MINIMUM_CONFIDENCE", "75"))
 
 @app.route("/v1/vision/detection", methods=["POST"])
 def process_image():
@@ -31,7 +32,7 @@ def process_image():
 
     # Resize the image, this makes Rekognition perform better (less data to send to AWS)
     if RESIZE_IMAGE:
-        img.thumbnail((1024,1024))
+        img.thumbnail((RESIZE_IMAGE_SIZE,RESIZE_IMAGE_SIZE))
 
     # Build Rekognition request
     buf = io.BytesIO()   
