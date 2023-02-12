@@ -51,6 +51,10 @@ export AWS_DEFAULT_REGION=...
 waitress-serve --listen 0.0.0.0:5000 DSShim:app
 ```
 
+# Other deployment options
+
+Deployment via a systemd unit and in a Kubernetes cluster is described in the [Deployment Documentation](deployment/README.md).
+
 # Blue Iris Configuration
 ![Blue Iris Configuration](images/blueiris_config.png)
 

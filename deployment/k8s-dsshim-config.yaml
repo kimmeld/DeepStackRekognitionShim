@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name:  dsshim-config
+data:
+  RESIZE_IMAGE: "YES"
+  RESIZE_IMAGE_SIZE: "768"
+  MINIMUM_CONFIDENCE: "50"
+  AWS_DEFAULT_REGION: "us-west-2"

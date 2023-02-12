@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dsshim
+  name: dsshim
+spec:
+  selector:
+    matchLabels:
+      app: dsshim
+  template:
+    metadata:
+      labels:
+        app: dsshim
+    spec:
+      containers:
+        - name: dsshim
+          image: ghcr.io/kimmeld/deepstackrekognitionshim:master
+          imagePullPolicy: Always
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: dsshim-secrets
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dsshim-secrets
+                  key:  AWS_SECRET_ACCESS_KEY
+            # Modify this if you want to use a different AWS region
+            - name:  AWS_DEFAULT_REGION
+              value:  us-west-2
+          ports:
+            - containerPort: 5001
+              name: http-dsshim
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dsshim
+spec:
+  # Modify this as appropriate for your cluster
+  clusterIP: 10.97.2.120
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: http-dsshim
+  selector:
+    app: dsshim
+  sessionAffinity: None
