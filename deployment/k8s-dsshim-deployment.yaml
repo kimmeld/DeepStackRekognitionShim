@@ -29,9 +29,26 @@ spec:
                 secretKeyRef:
                   name: dsshim-secrets
                   key:  AWS_SECRET_ACCESS_KEY
-            # Modify this if you want to use a different AWS region
             - name:  AWS_DEFAULT_REGION
-              value:  us-west-2
+              valueFrom:
+                configMapKeyRef:
+                  name: dsshim-config
+                  key:  AWS_DEFAULT_REGION
+            - name:  RESIZE_IMAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: dsshim-config
+                  key:  RESIZE_IMAGE
+            - name:  RESIZE_IMAGE_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  name: dsshim-config
+                  key:  RESIZE_IMAGE_SIZE
+            - name:  MINIMUM_CONFIDENCE
+              valueFrom:
+                configMapKeyRef:
+                  name: dsshim-config
+                  key:  MINIMUM_CONFIDENCE
           ports:
             - containerPort: 5001
               name: http-dsshim
