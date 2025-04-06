@@ -1,12 +1,12 @@
-FROM python:3.10
+FROM python:3.13
 
 RUN pip3 install --no-cache-dir --upgrade pip &&\
-    adduser --system worker
+    adduser worker
 
 USER worker
 WORKDIR /home/worker
 
-COPY --chown=worker:worker . .
+COPY . .
 
 RUN pip3 install --no-cache-dir --user -r requirements.txt && \
     pip3 install --no-cache-dir --user gunicorn

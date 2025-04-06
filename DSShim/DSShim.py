@@ -18,6 +18,10 @@ RESIZE_IMAGE = (os.getenv("RESIZE_IMAGE") == "YES")
 RESIZE_IMAGE_SIZE = int(os.getenv("RESIZE_IMAGE_SIZE", "768"))
 MINIMUM_CONFIDENCE = int(os.getenv("MINIMUM_CONFIDENCE", "75"))
 
+@app.route("/", methods=["GET"])
+def status():
+    return "OK"
+
 @app.route("/v1/vision/detection", methods=["POST"])
 def process_image():
     dsresp = {'predictions': [], 'success': True}
@@ -72,4 +76,4 @@ def process_image():
     return jsonify(dsresp)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
